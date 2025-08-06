@@ -39,7 +39,7 @@ jobs:
         DB_HOST: db
         DB_PORT: 3306
         DB_USER: root
-        DB_PASSWORD: 'admin'
+        DB_PASSWORD: '12345'
         DB_NAME: projet_pfe
       run: |
         docker-compose exec -T web python -c "
