@@ -1,0 +1,790 @@
+{% extends 'base.html' %}
+{% block title %} Acceuil Radio Mobile {% endblock %}
+{% block side_nav_menu %}
+     {% include 'menu_radio.html' %}
+{% endblock %}
+{% block side_nav_content %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                <div class="row" style="margin-top:50px">
+                    <div class="col-12">
+                        <table class="table table-borderless w-auto">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" ></th>
+                                    <td>
+                                        <a href="#" class="btn btn-outline" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                             Filtrer</a></td>
+                                    <td>
+                                        <a href="#" onclick="document.getElementById('viewMap').submit();"  class="btn btn-outline">Méteo</a>
+                                        <form action="{{ url_for('radio_map_bp.view_map') }}" method="post" id="viewMap">
+                                            <select hidden class="form-select"  id="alarmGroup" name="alarmGroup" >
+                                                  <option  value="TDD Alarms" selected>TDD Alarms</option>
+                                            </select>
+                                            <select hidden class="form-select"  id="alarm_name" name="alarm_name" >
+                                                  <option  value="" selected>alarm_name</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
+                                         <button type="button" class="btn btn-danger" id="clearFilter">
+                                             <i class="fa fa-eraser" aria-hidden="true"></i>
+                                         </button>
+                                        <div id="close_card_filter">
+                                            <span id="close_card_msg"> Active alarms</span>
+                                            <button id="close_card_btn" type="button" class="btn-close" aria-label="Close"></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-3 ">
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" style="max-width: 60%;" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                  <div class="card shadow-lg border-0 rounded-lg">
+                                    <div class="card-header"><h5 class="text-center font-weight-light my-4">Filtrer les alarmes</h5></div>
+                                    <div class="card-body">
+                                        <form enctype=multipart/form-data>
+                                              <div class="row">
+                                                    <div class="col">
+                                                        <div class="input-group mb-3">
+                                                            <label class="input-group-text" for="severity">Severity</label>
+                                                            <select class="form-select"  id="severity" name="severity" aria-label="Severity">
+                                                                  <option value="None"></option>
+                                                                  <option value="Critical">Critical</option>
+                                                                  <option value="Major" >Major</option>
+                                                                  <option value="Minor" >Minor</option>
+                                                                  <option value="Warning" >Warning</option>
+                                                                  <option value="Critical & Major">Critical & Major</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="input-group mb-3">
+                                                            <label for="last_occurred" class="input-group-text">Last Occurred</label>
+                                                            <select class="form-select"  id="last_occurred" name="last_occurred" aria-label="Severity">
+                                                                  <option value="None"></option>
+                                                                  <option value="less_than_1_hour" >Moins de 1h</option>
+                                                                  <option value="less_than_12_hours" >Moins de 12h</option>
+                                                                  <option value="less_than_24_hours" >Moins de 24h</option>
+                                                                  <option value="last_3_days" >Moins de 3 Jours</option>
+                                                                  <option value="last_7_days" >Moins de 7 Jours</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                              </div>
+                                            <div class="row">
+                                                    <div class="col">
+                                                        <div class="input-group mb-3">
+                                                            <label for="status" class="input-group-text">Status</label>
+                                                            <select class="form-select"  id="status" name="status" aria-label="Status">
+                                                                  <option value="None"></option>
+                                                                  <option value="Cleared">Cleared</option>
+                                                                  <option value="Uncleared" >UnCleared</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="input-group mb-3">
+                                                            <label for="uploadDate" class="input-group-text">Upload Date</label>
+                                                            <select class="form-select"  id="uploadDate" name="uploadDate" aria-label="uploadDate">
+                                                                 <option value="None"></option>
+                                                                 {% for file in file_list %}
+                                                                     <option value="{{ file }}">{{ file }}</option>
+                                                                 {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                              </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="input-group mb-3">
+                                                        <label for="ssv_status" class="input-group-text">SSV Status</label>
+                                                        <select class="form-select"  id="ssv_status" name="ssv_status"
+                                                                aria-label="SSV Status">
+                                                            <option value="None"></option>
+                                                            <option value="SSVOK">SSVOK</option>
+                                                            <option value="SSVOK/FN8OK">SSVOK/FN8OK</option>
+                                                            <option value="SSVOK/FN8NOK" >SSVOK/FN8NOK</option>
+                                                            <option value="SSVNOK" >SSVNOK</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group mb-3">
+                                                        <label for="filter_search" class="input-group-text">Search</label>
+                                                        <input class="form-control" placeholder="rechercher" id="filter_search" name="filter_search">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                                                <a id="filtrer" class="btn btn-outline" data-bs-dismiss="modal">Valider</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="carouselExampleControls" class="carousel" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="card card_custom">
+                                     <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fa-sharp fa-solid fa-chart-simple custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 pointer" title="Active Alarms" >Active Alarms</h5>
+                                        <h3 class="mt-3 mb-3" id="card_active_alarm">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> Save Time : </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fa-sharp fa-solid fa-tower-cell custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 card_grp"
+                                            onclick="window.location.href = '{{ url_for('alarm_group_bp.alarm_group', group_name='TDD Alarms') }}'"
+                                            title="Topic TDD">Topic TDD
+                                        </h5>
+                                        <h3 class="mt-3 mb-3" id="card_tdd_active">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fas fa-chart-area custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 card_grp"
+                                            onclick="window.location.href = '{{ url_for('alarm_group_bp.alarm_group', group_name='BH Alarms') }}'"
+                                            title="BH Sharing">BH Sharing
+                                        </h5>
+                                        <h3 class="mt-3 mb-3"  id="card_bh_active">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i></span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fas fa-clock custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 card_grp"
+                                            onclick="window.location.href = '{{ url_for('alarm_group_bp.alarm_group', group_name='CLOCK Alarms') }}'"
+                                            title="Clock Alarms">CLOCK
+                                        </h5>
+                                        <h3 class="mt-3 mb-3" id="card_active_clock">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fa-solid fa-satellite custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 card_grp"
+                                            onclick="window.location.href = '{{ url_for('alarm_group_bp.alarm_group', group_name='RET Alarms') }}'"
+                                            title="RET Alarms">RET</h5>
+                                        <h3 class="mt-3 mb-3" id="card_active_ret">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fa-solid fa-car-battery custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 card_grp"
+                                            onclick="window.location.href = '{{ url_for('alarm_group_bp.alarm_group', group_name='ENV Alarms') }}'"
+                                            title="ENV Alarms">ENV</h5>
+                                        <h3 class="mt-3 mb-3" id="card_active_env">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fa-solid fa-server custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 card_grp"
+                                            onclick="window.location.href = '{{ url_for('alarm_group_bp.alarm_group', group_name='VSWR Alarms') }}'"
+                                            title="VSWR Alarms">VSWR</h5>
+                                        <h3 class="mt-3 mb-3" id="card_active_vswr">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fa-sharp fa-solid fa-ethernet custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 card_grp"
+                                            onclick="window.location.href = '{{ url_for('alarm_group_bp.alarm_group', group_name='CPRI Alarms') }}'"
+                                            title="CPRI Alarms">CPRI</h5>
+                                        <h3 class="mt-3 mb-3" id="card_active_cpri">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fa-solid fa-chart-pie custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 card_grp"
+                                            onclick="window.location.href = '{{ url_for('alarm_group_bp.alarm_group', group_name='RTWP Alarms') }}'"
+                                            title="RTWP Alarms">RTWP</h5>
+                                        <h3 class="mt-3 mb-3" id="card_active_rtwp">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fa-solid fa-chart-pie custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 card_grp"
+                                            onclick="window.location.href = '{{ url_for('alarm_group_bp.alarm_group', group_name='Interference Alarms') }}'"
+                                            title="Interference Alarms">Interference</h5>
+                                        <h3 class="mt-3 mb-3" id="card_active_interference">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fa-solid fa-satellite custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 card_grp"
+                                            onclick="window.location.href = '{{ url_for('radio_congestion_bp.show_congestion') }}'"
+                                            title="RET Alarms">Congestion BH Sharing</h5>
+                                        <h3 class="mt-3 mb-3" id="card_active_cong">.</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fa-solid fa-chart-pie custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 card_grp"
+                                            onclick="window.location.href = '{{ url_for('alarm_group_bp.alarm_group', group_name='License Alarms') }}'"
+                                            title="Interference Alarms">License</h5>
+                                        <h3 class="mt-3 mb-3" id="card_active_license">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="card card_custom">
+                                    <div class="card-body">
+                                        <div class="float-end">
+                                            <i class="fa-sharp fa-solid fa-chart-simple custom_icon" aria-hidden="true"></i>
+                                        </div>
+                                        <h5 class="text-muted fw-normal mt-0 pointer" title="Total Bagots">Total Bagots</h5>
+                                        <h3 class="mt-3 mb-3" id="card_top_bagots">0,000</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> </span>
+                                            <span class="text-nowrap">{{ file_list[0] }}</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                    <div class="card-footer border-0 p-0">
+                                         <div class="d-grid">
+                                             <a href="#" class="btn  rounded-0 rounded-bottom" style="background:#ff7f00;"></a>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Active Alarms
+                            </div>
+                            <div class="card-body">
+                               <div id="chart1"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                Evolution Active Alarms By Severity
+                            </div>
+                            <div class="card-body">
+                                 <div id="chart2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                Top 10 Bagots
+                            </div>
+                            <div class="card-body">
+                                 <div id="chart4"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                Evolution Active Alarms
+                            </div>
+                            <div class="card-body">
+                                 <div id="chart5"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-5">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Alarm Duration
+                            </div>
+                            <div class="card-body">
+                                <div id="chart6"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-7">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Top 10 Alarms
+                            </div>
+                            <div class="card-body">
+                                <div id="chart3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- charts input filter -->
+                    <input value="None" type="hidden" name="chart_severity" id="chart_severity">
+                    <input value="None" type="hidden" name="chart_alarm_name" id="chart_alarm_name">
+                    <input value="None" type="hidden" name="chart_alarm_source" id="chart_alarm_source">
+                    <input value=0 type="hidden" name="export_excel" id="export_excel">
+                    <input value="{{ file_list[0] }}" type="hidden" name="current_save_time" id="current_save_time">
+                    <!-- charts input filter end -->
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Alarms RADIO
+                    </div>
+                    <div class="card-body">
+                        <table id="data" class="table table-striped table-hover">
+                            <thead>
+                                  <tr>
+                                        <th>Severity</th>
+                                        <th>Name</th>
+                                        <th>Last Occurred (NT)</th>
+                                        <th>NE Type</th>
+                                        <th>Alarm Source</th>
+                                        <th>Clearance Status</th>
+                                        <th>Occurrence Times</th>
+                                        <th>SSV Status</th>
+                                        <th>Alarm Duration</th>
+                                  </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid px-4">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">Copyright &copy; Orange Tunisia 2023</div>
+                    <div>
+                        <a href="#">Privacy Policy</a>
+                        &middot;
+                        <a href="#">Terms &amp; Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<link href="{{ url_for('static', filename='css/carousel.css' )}}" rel="stylesheet" />
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/carousel.js')}}"></script>
+  <script>
+    $("#clearFilter").hide();
+    function plot_home_charts(url) {
+          $.ajax(url,
+               {
+                    type: 'POST',  // http method
+                    // data: { alarm_grp: $("#alarmGroup").val()},  // data to submit
+                    success: function (data, status, xhr) {
+                       for (const [key, value] of Object.entries(data["cards"])) {
+                          $("#"+ key).html(value) ;
+                        }
+
+                       for(var i =0; i < data["graphs"].length; i++){
+                           // console.log(data["graphs"][i]);
+                            var graphs1 = JSON.parse(data["graphs"][i]);
+                            Plotly.react("chart" + (i+1), graphs1,{});
+                        }
+                    },
+                    error: function (jqXhr, textStatus, errorMessage) {
+                            alert("en error occurred");
+                    }
+                });
+        }
+
+    function radio_home_filter(url, param) {
+          $.ajax(url,
+               {
+                    type: 'POST',  // http method
+                    data: param,  // data to submit
+                    success: function (data, status, xhr) {
+                        for (const [key, value] of Object.entries(data["cards"])) {
+                            console.log(key);
+                          $("#"+ key).html(value) ;
+                        }
+
+                        for(var i =0; i < data["graphs"].length; i++){
+                           // console.log(data["graphs"][i]);
+                            var graphs1 = JSON.parse(data["graphs"][i]);
+                            Plotly.react("chart" + (i+1), graphs1,{});
+                        }
+                    },
+                    error: function (jqXhr, textStatus, errorMessage) {
+                            alert("en error occurred");
+                    }
+                });
+        }
+
+    $(document).ready(function () {
+          var home_table = $('#data').DataTable({
+                                ajax: {
+                                     url: "{{ url_for('radio_api_bp.get_home_data') }}",
+                                     type: "GET",
+                                     data: function ( d ) {
+                                        d.severity = $("#severity").val(),
+                                        d.last_occurred = $("#last_occurred").val(),
+                                        d.status = $("#status").val(),
+                                        d.uploadDate = $("#uploadDate").val(),
+                                        d.chart_severity = $("#chart_severity").val(),
+                                        d.card_alarm_group = "None",
+                                        d.chart_alarm_name = $("#chart_alarm_name").val(),
+                                        d.chart_alarm_source = $("#chart_alarm_source").val(),
+                                        d.export_excel = $("#export_excel").val(),
+                                        d.ssv_status = $("#ssv_status").val(),
+                                        d.filter_search = $("#filter_search").val()
+                                        }
+                                },
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        text: 'Export to Excel',
+                                        filename: 'example',
+                                        action: function(e, dt, button, config) {
+                                            e.preventDefault();
+                                            // Handle click event here
+                                            $("#export_excel").val(1);
+                                            $.ajax({
+                                                url: "{{ url_for('radio_api_bp.get_home_data') }}",
+                                                type: "GET",
+                                                data: {
+                                                    severity: $("#severity").val(),
+                                                    last_occurred: $("#last_occurred").val(),
+                                                    status: $("#status").val(),
+                                                    uploadDate: $("#uploadDate").val(),
+                                                    chart_severity: $("#chart_severity").val(),
+                                                    card_alarm_group: "None",
+                                                    chart_alarm_name: $("#chart_alarm_name").val(),
+                                                    chart_alarm_source: $("#chart_alarm_source").val(),
+                                                    export_excel: $("#export_excel").val(),
+                                                    ssv_status: $("#ssv_status").val(),
+                                                    filter_search: $("#filter_search").val()
+                                                    },
+                                                success: function(response) {
+                                                    $("#chart_alarm_source").val(0);
+                                                    url = "{{ url_for('radio_api_bp.export_radio_data', filepath='' )}}" ;
+                                                    url = url.concat(response);
+                                                    window.open(url,'_blank');
+                                                    location.reload();
+                                                }
+                                            });
+                                        }
+                                    }
+                                ],
+                                dom: 'Bfrtip',
+                                serverSide: true,
+                                responsive: true,
+                                columns: [
+                                  {data: 'Severity'},
+                                  {data: 'Name'},
+                                  {data: 'Last Occurred (NT)'},
+                                  {data: 'NE Type'},
+                                  {data: 'Alarm Source'},
+                                  {data: 'Clearance Status'},
+                                  {data: 'Occurrence Times'},
+                                  {data: 'Home Subnet'},
+                                  {data: 'Alarm Duration'}
+                                ],
+                                "rowCallback": function(row, data, index) {
+                                    if (data.Severity == "Critical") {
+                                      $('td:eq(0)', row).css('background-color', '#e60000');
+                                    } else if (data.Severity == "Major") {
+                                      $('td:eq(0)', row).css('background-color', '#ff9900');
+                                    } else if (data.Severity == "Minor") {
+                                      $('td:eq(0)', row).css('background-color', '#ffcc00');
+                                    } else if (data.Severity == "Warning") {
+                                      $('td:eq(0)', row).css('background-color', '#3399ff');
+                                    }
+                                  },
+                     });
+
+          plot_home_charts("{{ url_for('radio_api_bp.get_home_charts') }}");
+
+          $("#filtrer").click(function(){
+
+               severity = $("#severity").val();
+               last_occurred = $("#last_occurred").val();
+               status = $("#status").val();
+               uploadDate = $("#uploadDate").val();
+               ssv_status = $("#ssv_status").val();
+               filter_search = $("#filter_search").val();
+
+               if(((severity == "None") & (uploadDate == "None")) & ((last_occurred == "None") & (status=="None")) & (ssv_status=="None") & (filter_search=="") ){
+                        $("#clearFilter").hide();
+               }
+               else{
+                       params = {
+                       "severity": severity,
+                       "last_occurred": last_occurred,
+                       "status": status,
+                       "uploadDate": uploadDate,
+                       "ssv_status": ssv_status,
+                       "filter_search": filter_search
+                       };
+                      radio_home_filter("{{ url_for('radio_api_bp.home_filter') }}", params) ;
+                      home_table.ajax.reload();
+
+                      if(uploadDate != "None"){
+                            $(".text-nowrap").html(uploadDate);
+                      }
+
+                      $("#clearFilter").show();
+               }
+
+           });
+
+           $('#clearFilter').click(function() {
+                location.reload();
+            });
+
+           $("h5.pointer").click(function(){
+             var map = {
+                "Active Alarms": "Uncleared"
+              };
+              clicked_item = $(this).html();
+              clicked_item_value = map[clicked_item];
+              if(clicked_item_value){
+                   $("#status").val(clicked_item_value);
+                   $('#filtrer').click();
+              }
+           });
+
+           $("#close_card_btn").click(function(){
+                $('#card_alarm_group').val("None");
+                $("#chart_severity").val("None");
+                $("#chart_alarm_name").val("None");
+                $("#chart_alarm_source").val("None");
+                $("#close_card_filter").hide();
+                home_table.ajax.reload();
+           });
+
+           $('#chart1').on('plotly_click', function(arg1, arg2){
+                severity = arg2.points[0].label;
+                $("#chart_severity").val(severity);
+                home_table.ajax.reload();
+                $('#close_card_msg').html(severity);
+                $("#close_card_filter").show();
+           });
+
+           $('#chart3').on('plotly_click', function(arg1, arg2){
+                alarm_name = arg2.points[0].label;
+                $("#chart_alarm_name").val(alarm_name);
+                home_table.ajax.reload();
+                $('#close_card_msg').html(alarm_name);
+                $("#close_card_filter").show();
+           });
+
+           $('#chart4').on('plotly_click', function(arg1, arg2){
+                alarm_source = arg2.points[0].label;
+                $("#chart_alarm_source").val(alarm_source);
+                home_table.ajax.reload();
+                $('#close_card_msg').html(alarm_source);
+                $("#close_card_filter").show();
+           });
+
+           $('#chart5').on('plotly_click', function(arg1, arg2){
+                save_time = arg2.points[0].label;
+                $("#uploadDate").val(save_time);
+                $('#filtrer').click();
+           });
+    });
+  </script>
+{% endblock %}
+

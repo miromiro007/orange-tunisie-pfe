@@ -1,0 +1,67 @@
+ .btn-outline {
+      color: #ff7f00;
+      border-radius: 15px;
+      background-color: #ffffff;
+      border-color: #ff7f00;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      width: 200px;
+      text: center;
+  }
+
+ .btn-outline {
+      color: #ff7f00;
+      border-radius: 15px;
+      background-color: #ffffff;
+      border-color: #ff7f00;
+      font-weight: bold;
+      border-radius: 0;
+   }
+
+.btn-outline:hover,
+.btn-outline:active,
+.btn-outline:focus,
+.btn-outline.active {
+      background: #ff7f00;
+      color: #ffffff;
+      border-color: #ff7f00;
+
+   }
+#datatablesSimple tbody tr.selected {
+    color: white;
+    background-color: #ffcc00;
+}
+
+.custom_icon{
+    color:#ff7f00;
+    width:30px;
+    height:30px
+}
+
+#close_card_filter{
+   color: #ff7f00;
+   font-size: 20px;
+   display: none;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ff7f00;
+  border-radius: 3px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #ffcc00;
+  cursor: pointer;
+}
+
+#chart1 > div.js-plotly-plot > div > div > svg:nth-child(1) > g.pielayer{
+    cursor: pointer;
+}

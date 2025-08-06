@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %} Acceuil FH {% endblock %}
+{% block top_navbar_title %}
+    <a class="navbar-brand ps-3" href="{{ url_for('fh_home_bp.home') }}"> RESEAU FH</a>
+{% endblock %}
+{% block side_nav_menu %}
+     {% include 'menu_fh.html' %}
+{% endblock %}
+{% block side_nav_content %}
+    <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">MLO</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item"><a href="{{ url_for('fh_home_bp.home') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item active">MLO SPECIFICATIONS</li>
+                        </ol>
+                        <div class="card mb-4 justify-content-center">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                Tableau de Spécification Lien FH
+                            </div>
+                            <div class="card-body">
+                                <table class="tg">
+                                    <thead>
+                                      <tr>
+                                        <th class="tg-hle0" colspan="4">LINK SPECIFICATION</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td class="tg-g7sd">Link ID</td>
+                                        <td class="tg-lboi">{{ mw_link['EndA']['Link ID'] }}</td>
+                                        <td class="tg-g7sd">Length&nbsp;&nbsp;&nbsp;(m)</td>
+                                        <td class="tg-lboi">{{ mw_link['EndA']['Length (m)'] }}</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="tg-g7sd">Capacity</td>
+                                        <td class="tg-lboi">{{ mw_link['EndA']['Capacity'] }}</td>
+                                        <td class="tg-g7sd">Calculation&nbsp;&nbsp;&nbsp;Method</td>
+                                        <td class="tg-lboi">{{ mw_link['EndA']['Calculation Method'] }}</td>
+                                      </tr>
+                                      <tr>
+                                        <td class="tg-0pky"></td>
+                                        <td class="tg-0pky"></td>
+                                        <td class="tg-uzvj">End A</td>
+                                        <td class="tg-uzvj">End B</td>
+                                      </tr>
+                                      {% for key in mw_link["EndA"].keys() %}
+                                            {% if mw_link["EndA"][key] is mapping  %}
+                                                     <tr>
+                                                         <td class="tg-0pky"></td>
+                                                         <td class="tg-7btt" colspan="3">{{ key }}</td>
+                                                     </tr>
+                                                     {% for k in mw_link["EndA"][key].keys() %}
+                                                          <tr>
+                                                            <td class="tg-g7sd"></td>
+                                                            <td class="tg-g7sd">{{ k }} &nbsp;&nbsp;&nbsp;</td>
+                                                            <td class="tg-9wq8">{{ mw_link["EndA"][key][k] }}</td>
+                                                            <td class="tg-9wq8">{{ mw_link["EndB"][key][k] }}</td>
+                                                          </tr>
+                                                     {% endfor %}
+                                            {% endif %}
+                                      {% endfor %}
+                                    </tbody>
+                                    </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Orange Tunisia 2023</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-9wq8{border-color:inherit;text-align:center;vertical-align:middle}
+.tg .tg-hle0{background-color:#ffffff;border-color:inherit;color:#000000;font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-g7sd{border-color:inherit;font-weight:bold;text-align:left;vertical-align:middle}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-uzvj{border-color:inherit;font-weight:bold;text-align:center;vertical-align:middle}
+.tg .tg-7btt{border-color:inherit;font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+.tg .tg-amwm{font-weight:bold;text-align:center;vertical-align:top}
+</style>
+{% endblock %}
+

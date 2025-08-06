@@ -1,0 +1,68 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: docker.io/bbaouissi/projet_automatisation_reseau:latest
+
+    - name: Run services
+      run: |
+        docker-compose up -d
+        sleep 30  # Attendre que les services démarrent
+
+    - name: Test MySQL Connection
+      env:
+        DB_HOST: db
+        DB_PORT: 3306
+        DB_USER: root
+        DB_PASSWORD: 'admin'
+        DB_NAME: projet_pfe
+      run: |
+        docker-compose exec -T web python -c "
+        import pymysql
+        try:
+            connection = pymysql.connect(
+                host='${{ env.DB_HOST }}',
+                port=int('${{ env.DB_PORT }}'),
+                user='${{ env.DB_USER }}',
+                password='${{ env.DB_PASSWORD }}',
+                database='${{ env.DB_NAME }}',
+                connect_timeout=10
+            )
+            print('Connexion réussie !')
+        except pymysql.MySQLError as e:
+            print(f'Erreur lors de la connexion à MySQL : {e}')
+        finally:
+            if connection:
+                connection.close()
+        "
+
+    
+
+    - name: Clean up
+      run: |
+        docker-compose down

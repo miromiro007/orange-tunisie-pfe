@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %} Radio Mobile | Map {% endblock %}
+{% block side_nav_menu %}
+     {% include 'menu_radio.html' %}
+{% endblock %}
+{% block side_nav_content %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                 <div class="row" style="margin-top:50px">
+                    <div class="col-xl-2">
+                        <div class="row" style="margin-top:5px">
+                             <div class="card shadow widget-flat">
+                                <div class="card-body">
+                                     <form action="{{ url_for('radio_map_bp.view_map') }}" method="post" id="viewMapAlarmGroup">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select"  name="alarmGroup" id="selectAlarmGroup" aria-label="RET Alarms">
+                                                  <option value="{{current_alarm_group}}" selected>{{ response_data['alarm_group'] }}</option>
+                                                    {% set alarms = [
+                                                                        "RET Alarms",
+                                                                        "CLOCK Alarms",
+                                                                        "TDD Alarms",
+                                                                        "ENV Alarms",
+                                                                        "BH Alarms",
+                                                                        "VSWR Alarms",
+                                                                        "CPRI Alarms",
+                                                                        "RTWP Alarms",
+                                                                        "Interference Alarms"
+                                                                    ]
+                                                    %}
+                                                    {% for alarm in alarms %}
+                                                        {% if alarm != response_data['alarm_group']  %}
+                                                            <option value="{{ alarm }}" >{{ alarm }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                            </select>
+                                            <label for="alarmGroup">Current Alarm Group</label>
+                                        </div>
+                                        <select hidden class="form-select" name="alarm_name" >
+                                                  <option  value="" selected>alarm_name</option>
+                                        </select>
+                                    </form>
+                                </div> <!-- end card-body-->
+                            </div> <!-- end card-->
+                        </div>
+                        <div class="row" style="margin-top:5px">
+                             <div class="card shadow widget-flat">
+                                <div class="card-body">
+                                    <form action="{{ url_for('radio_map_bp.view_map') }}" method="post" id="viewMap">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select"  id="alarm_name" name="alarm_name" >
+                                                  <option value="{{ response_data['current_alarm'] }}"
+                                                          selected>{{ response_data['current_alarm'] }}</option>
+                                                    {% for alarm in response_data['alarm_name_list'] %}
+                                                        {% if alarm != response_data['current_alarm'] %}
+                                                            <option value="{{ alarm }}" >{{ alarm }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                            </select>
+                                            <label for="alarm_name">Current Alarm Name</label>
+                                            <input type="hidden" name="alarmGroup" id="alarmGroup" value="{{ response_data['alarm_group'] }}">
+                                        </div>
+                                    </form>
+                                </div> <!-- end card-body-->
+                            </div> <!-- end card-->
+                        </div>
+                        <div class="row" style="margin-top:5px">
+                             <div class="card shadow widget-flat">
+                                <div class="card-body">
+                                    <div class="float-end">
+                                        <i class="fa-sharp fa-solid fa-tower-cell" aria-hidden="true" style="color:#ff7f00;
+                                         width:30px; height:30px"></i>
+                                    </div>
+                                    <h5 class="text-muted fw-normal mt-0" title="Number of Customers">Total des sites</h5>
+                                    <h3 class="mt-3 mb-3" id="card_active_alarm">{{ response_data["total_site"] }}</h3>
+                                </div> <!-- end card-body-->
+                            </div> <!-- end card-->
+                        </div>
+                    </div>
+                     <div class="col-xl-10">
+                         {{ response_data['map'] | safe }}
+                     </div>
+                 </div>
+            </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid px-4">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">Copyright &copy; Orange Tunisia 2023</div>
+                    <div>
+                        <a href="#">Privacy Policy</a>
+                        &middot;
+                        <a href="#">Terms &amp; Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+ <script>
+       $("#alarm_name").change(function(){
+            document.getElementById('viewMap').submit();
+       });
+
+       $("#selectAlarmGroup").change(function(){
+           document.getElementById('viewMapAlarmGroup').submit();
+       });
+
+       $('#viewMap').submit(function() {
+            $('.load').css('visibility', 'visible');
+        });
+  </script>
+{% endblock %}
+

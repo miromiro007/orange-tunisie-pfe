@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+          <!-- add icon link -->
+        <link rel="icon" href="{{ url_for('static', filename='assets/img/orange-icon.png' )}}" type="image/x-icon">
+        <title>
+            {% block title %} {% endblock %}
+        </title>
+        {% block map_header %} {% endblock %}
+        <link href="{{ url_for('static', filename='css/styles.css' )}}" rel="stylesheet" />
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/all.js')}}" ></script>
+
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css' )}}" >
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dataTables.bootstrap5.min.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/select.bootstrap5.min.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/buttons.dataTables.min.css')}}">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+    <body class="sb-nav-fixed">
+        {% block side_nav_menu %}
+
+        {% endblock %}
+
+        {% include 'alert.html' %}
+
+        <div id="layoutSidenav">
+            {% block side_nav_content %}
+
+            {% endblock %}
+
+        </div>
+        <div class="load"><!-- Place at bottom of page --></div>
+        <script type="text/javascript" charset="utf8"  src="{{ url_for('static', filename='js/bootstrap.bundle.min.js')}}" ></script>
+        <script src="{{ url_for('static', filename='js/scripts.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/plotly-2.18.0.min.js')}}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/jquery-3.5.1.js')}}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/jquery.dataTables.min.js')}}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/dataTables.bootstrap5.min.js')}}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/dataTables.select.min.js')}}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/dataTables.buttons.min.js')}}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/buttons.bootstrap5.min.js')}}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/jszip.min.js')}}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/pdfmake.min.js')}}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/vfs_fonts.js')}}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/buttons.html5.min.js')}}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/buttons.print.min.js')}}"></script>
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/buttons.colVis.min.js')}}"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <link href="{{ url_for('static', filename='css/custom_style.css' )}}" rel="stylesheet" />
+        <link href="{{ url_for('static', filename='css/preloader.css' )}}" rel="stylesheet" />
+        <script type="text/javascript" charset="utf8" src="{{ url_for('static', filename='js/preloader.js')}}"></script>
+
+        {% block scripts %}{% endblock %}
+    </body>
+</html>

@@ -1,0 +1,43 @@
+
+/* Start by setting display:none to make this hidden.
+   Then we position it in relation to the viewport window
+   with position:fixed. Width, height, top and left speak
+   for themselves. Background we set to 80% white with
+   our animation centered, and no-repeating */
+.load{
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 )
+                url('../assets/img/loading.gif')
+                50% 50%
+                no-repeat;
+}
+
+#loader{
+    top:        0;
+    left:       0;
+    width:100%;
+    height:100%;
+    position:fixed;
+    z-index:9999;
+    background: rgba( 255, 255, 255, .8 )
+                url('../assets/img/loading.gif')
+                50% 50%
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading .load {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .load {
+    display: block;

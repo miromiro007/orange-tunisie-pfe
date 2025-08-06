@@ -1,0 +1,503 @@
+{% extends 'base.html' %}
+{% block title %} Radio Mobile | Alarm Group {% endblock %}
+{% block top_navbar_title %}
+    <a class="navbar-brand ps-3" href="{{ url_for('radio_home_bp.home') }}"> RESEAU Radio Mobile</a>
+{% endblock %}
+{% block side_nav_menu %}
+     {% include 'menu_radio.html' %}
+{% endblock %}
+{% block side_nav_content %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                 <div class="row" style="margin-top:50px">
+                    <div class="col-xl-2">
+                        <form action="{{ url_for('radio_map_bp.view_map') }}" method="post" id="viewMap">
+                            <div class="form-floating mb-3">
+                                <select class="form-select"  id="alarmGroup" name="alarmGroup" aria-label="RET Alarms">
+                                      <option value="{{current_alarm_group}}" selected>{{current_alarm_group}}</option>
+                                        {% set alarms = [
+                                                            "RET Alarms",
+                                                            "CLOCK Alarms",
+                                                            "TDD Alarms",
+                                                            "ENV Alarms",
+                                                            "BH Alarms",
+                                                            "VSWR Alarms",
+                                                            "CPRI Alarms",
+                                                            "RTWP Alarms",
+                                                            "Interference Alarms"
+                                                        ]
+                                       %}
+                                        {% for alarm in alarms %}
+                                            {% if alarm != current_alarm_group %}
+                                                <option value="{{ alarm }}" >{{ alarm }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                </select>
+                                <label for="alarmGroup">Selected Alarm Group</label>
+                            </div>
+                            <select hidden class="form-select"  id="alarm_name" name="alarm_name" >
+                                      <option  value="" selected>alarm_name</option>
+                            </select>
+                        </form>
+                    </div>
+                     <div class="col-xl-2">
+                         <div class="form-floating mb-3">
+                                <select class="form-select"  id="uploadDate" name="uploadDate" aria-label="uploadDate">
+                                     <option value="None"></option>
+                                     {% for file in file_list %}
+                                         <option value="{{ file }}">{{ file }}</option>
+                                     {% endfor %}
+                                </select>
+                             <label for="uploadDate" class="form-label">Selected Extract</label>
+                        </div>
+                    </div>
+                     <div class="col-xl-2">
+                         <div class="form-floating mb-3">
+                                <select class="form-select"  id="ssv_status" name="ssv_status" aria-label="SSV Status">
+                                     <option value="None"></option>
+                                     <option value="SSVOK">SSVOK</option>
+                                     <option value="SSVOK/FN8OK">SSVOK/FN8OK</option>
+                                     <option value="SSVOK/FN8NOK" >SSVOK/FN8NOK</option>
+                                     <option value="SSVNOK" >SSVNOK</option>
+                                </select>
+                             <label for="ssv_status" class="form-label">SSV Status</label>
+                        </div>
+                    </div>
+                     <div class="col-xl-2">
+                         <div class="form-floating mb-3">
+                                <a class="btn btn-outline" href="#"
+                                   onclick="document.getElementById('viewMap').submit();" style="margin-top:10px">Météo</a>
+                        </div>
+                    </div>
+                     <div class="col-xl-4">
+                         <div id="close_card_filter">
+                            <span id="close_card_msg"> Active alarms</span>
+                            <button id="close_card_btn" type="button" class="btn-close" aria-label="Close"></button>
+                         </div>
+                     </div>
+                 </div>
+                <div class="row">
+                    <div class="col-xl-5">
+                        <div class="card mb-5">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                Active  {{ current_alarm_group }}
+                            </div>
+                            <div class="card-body">
+                                 <table id="datatablesSimple" class="table table-striped table-hover w-auto">
+                                      <caption style="caption-side: top"></caption>
+                                    <thead>
+                                        <tr>
+                                            <th>Alarm Name</th>
+                                            <th>Count</th>
+                                            <th>Occurrence Times</th>
+                                            <th>Total site</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="col-xl-7">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Liste Des Sites
+                            </div>
+                            <div class="card-body">
+                               <table id="datatablesSite" class="table table-striped table-hover">
+                                   <caption style="caption-side: top"></caption>
+                                    <thead>
+                                        <tr>
+                                            <th>Alarm ID</th>
+                                            <th>Severity</th>
+                                            <th>Alarm Source</th>
+                                            <th>NE Type</th>
+                                            <th>Last Occurred (NT)</th>
+                                            <th>Occurrence Times</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Active Alarms
+                            </div>
+                            <div class="card-body">
+                                <div id="chart1"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                Evolution Active Alarms By Severity
+                            </div>
+                            <div class="card-body">
+                                <div id="chart4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <diiv class="row">
+                    <div class="col-xl-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                Top Bagots
+                            </div>
+                            <div class="card-body">
+                                 <div id="chart2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                Evolution Active Alarms
+                            </div>
+                            <div class="card-body">
+                                 <div id="chart6"></div>
+                            </div>
+                        </div>
+                    </div>
+                </diiv>
+                <div class="row">
+                    <div class="col-xl-5">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                Top Active Bagots
+                            </div>
+                            <div class="card-body">
+                                 <div id="chart5"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-7">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                Top Alarms
+                            </div>
+                            <div class="card-body">
+                                 <div id="chart3"></div>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- charts input filter -->
+                        <input value="None" type="hidden" name="chart_severity" id="chart_severity">
+                        <input value="None" type="hidden" name="chart_alarm_name" id="chart_alarm_name">
+                        <input value="None" type="hidden" name="chart_alarm_source" id="chart_alarm_source">
+                        <input value=0 type="hidden" name="chart_alarm_source" id="export_excel">
+                    <!-- charts input filter end -->
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Alarms RADIO
+                    </div>
+                    <div class="card-body">
+                        <table id="data" class="table table-striped table-hover">
+                            <thead>
+                                  <tr>
+                                        <th>Severity</th>
+                                        <th>Name</th>
+                                        <th>Last Occurred (NT)</th>
+                                        <th>NE Type</th>
+                                        <th>Alarm Source</th>
+                                        <th>Clearance Status</th>
+                                        <th>Occurrence Times</th>
+                                        <th>SSV Status</th>
+                                  </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid px-4">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">Copyright &copy; Orange Tunisia 2023</div>
+                    <div>
+                        <a href="#">Privacy Policy</a>
+                        &middot;
+                        <a href="#">Terms &amp; Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+          function plot_chart(url) {
+          $.ajax(url,
+               {
+                    type: 'POST',  // http method
+                    data: {
+                        alarm_grp: $("#alarmGroup").val(),
+                        uploadDate: $("#uploadDate").val(),
+                        ssv_status: $("#ssv_status").val()
+                    },  // data to submit
+                    success: function (data, status, xhr) {
+                        //alert("request success");
+                        for(var i =0; i < data["graphs"].length; i++){
+                           // console.log(data["graphs"][i]);
+                            var graphs1 = JSON.parse(data["graphs"][i]);
+                            Plotly.react("chart" + (i+1), graphs1,{});
+                        }
+                    },
+                    error: function (jqXhr, textStatus, errorMessage) {
+                            alert("en error occurred");
+                    }
+                });
+        }
+      $(document).ready(function() {
+            // $('#datatablesSimple').append('<caption style="caption-side: top">'+ $("#alarmGroup").val() +'</caption>');
+            $('#datatablesSimple caption').html($("#alarmGroup").val());
+            var tbl_alarm = $('#datatablesSimple').DataTable({
+                    select: true,
+                    select: {
+                        style: 'single'
+                    },
+                    "ordering": false,
+                    pageLength : 5,
+                    lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']],
+                    responsive: true,
+                    buttons: [ 'copy', 'excel', 'pdf', 'print' ],
+                    dom: 'Bfrtip',
+                    ajax:{
+                         url: "{{ url_for('radio_api_bp.get_alarm_group_data') }}",
+                         type: "POST",
+                         data: function ( d ) {
+                            d.alarm_grp = $("#alarmGroup").val(),
+                            d.uploadDate = $("#uploadDate").val(),
+                            d.ssv_status = $("#ssv_status").val()
+                            }
+                        },
+                    columns: [
+                      {data: 'Alarm Name'},
+                      {data: 'Count'},
+                      {data: 'Occurrence Times'},
+                      {data: 'Total site'},
+                     ],
+           });
+
+           tbl_alarm.buttons().container().appendTo( '#example_wrapper .col-md-6:eq(0)' );
+
+           var data_table = $('#data').DataTable({
+                                ajax: {
+                                     url: "{{ url_for('radio_api_bp.get_home_data') }}",
+                                     type: "GET",
+                                     data: function ( d ) {
+                                        d.severity = "None",
+                                        d.last_occurred = "None",
+                                        d.status = "None",
+                                        d.uploadDate = $("#uploadDate").val(),
+                                        d.card_alarm_group = $("#alarmGroup").val(),
+                                        d.chart_severity = $("#chart_severity").val(),
+                                        d.chart_alarm_name = $("#chart_alarm_name").val(),
+                                        d.chart_alarm_source = $("#chart_alarm_source").val(),
+                                        d.export_excel = $("#export_excel").val(),
+                                        d.ssv_status = $("#ssv_status").val()
+                                        }
+                                },
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        text: 'Export to Excel',
+                                        filename: 'example',
+                                        action: function(e, dt, button, config) {
+                                            e.preventDefault();
+                                            // Handle click event here
+                                            console.log('Excel export button clicked');
+                                            $("#export_excel").val(1);
+                                            $.ajax({
+                                                url: "{{ url_for('radio_api_bp.get_home_data') }}",
+                                                type: "GET",
+                                                data: {
+                                                    severity: "None",
+                                                    last_occurred: "None",
+                                                    status: "None",
+                                                    uploadDate: $("#uploadDate").val(),
+                                                    card_alarm_group: $("#alarmGroup").val(),
+                                                    chart_severity: $("#chart_severity").val(),
+                                                    chart_alarm_name: $("#chart_alarm_name").val(),
+                                                    chart_alarm_source: $("#chart_alarm_source").val(),
+                                                    export_excel: $("#export_excel").val(),
+                                                    ssv_status: $("#ssv_status").val()
+                                                    },
+                                                success: function(response) {
+                                                    // Handle server's response here
+                                                    $("#chart_alarm_source").val(0);
+                                                    url = "{{ url_for('radio_api_bp.export_radio_data', filepath='' )}}" ;
+                                                    url = url.concat(response);
+                                                    window.open(url,'_blank');
+                                                    location.reload();
+                                                }
+                                            });
+                                        }
+                                    }
+                                ],
+                                dom: 'Bfrtip',
+                                responsive: true,
+                                serverSide: true,
+                                columns: [
+                                  {data: 'Severity'},
+                                  {data: 'Name'},
+                                  {data: 'Last Occurred (NT)'},
+                                  {data: 'NE Type'},
+                                  {data: 'Alarm Source'},
+                                  {data: 'Clearance Status'},
+                                  {data: 'Occurrence Times'},
+                                  {data: 'Home Subnet'}
+                                ],
+                                "rowCallback": function(row, data, index) {
+                                    if (data.Severity == "Critical") {
+                                      $('td:eq(0)', row).css('background-color', '#e60000');
+                                    } else if (data.Severity == "Major") {
+                                      $('td:eq(0)', row).css('background-color', '#ff9900');
+                                    } else if (data.Severity == "Minor") {
+                                      $('td:eq(0)', row).css('background-color', '#ffcc00');
+                                    } else if (data.Severity == "Warning") {
+                                      $('td:eq(0)', row).css('background-color', '#3399ff');
+                                    }
+                                  },
+                     });
+
+           $("#close_card_btn").click(function(){
+                $('#card_alarm_group').val("None");
+                $("#chart_severity").val("None");
+                $("#chart_alarm_name").val("None");
+                $("#chart_alarm_source").val("None");
+                $("#close_card_filter").hide();
+                data_table.ajax.reload();
+           });
+
+           $('#chart1').on('plotly_click', function(arg1, arg2){
+                severity = arg2.points[0].label;
+                $("#chart_severity").val(severity);
+                data_table.ajax.reload();
+                $('#close_card_msg').html(severity);
+                $("#close_card_filter").show();
+           });
+
+           $('#chart3').on('plotly_click', function(arg1, arg2){
+                alarm_name = arg2.points[0].label;
+                $("#chart_alarm_name").val(alarm_name);
+                data_table.ajax.reload();
+                $('#close_card_msg').html(alarm_name);
+                $("#close_card_filter").show();
+           });
+
+           $('#chart2').on('plotly_click', function(arg1, arg2){
+                alarm_source = arg2.points[0].label;
+                $("#chart_alarm_source").val(alarm_source);
+                data_table.ajax.reload();
+                $('#close_card_msg').html(alarm_source);
+                $("#close_card_filter").show();
+           });
+
+           $('#chart6').on('plotly_click', function(arg1, arg2){
+                save_time = arg2.points[0].label;
+                $("#uploadDate").val(save_time);
+                $('#uploadDate').change();
+           });
+
+           $("#alarmGroup").change(function(){
+                tbl_alarm.ajax.reload();
+                data_table.ajax.reload();
+                $('#datatablesSimple caption').html($("#alarmGroup").val());
+                plot_chart("{{ url_for('radio_api_bp.get_alarm_grp_charts') }}");
+
+           });
+
+           $("#ssv_status").change(function(){
+                tbl_alarm.ajax.reload();
+                data_table.ajax.reload();
+                plot_chart("{{ url_for('radio_api_bp.get_alarm_grp_charts') }}");
+
+           });
+
+           $("#uploadDate").change(function(){
+                tbl_alarm.ajax.reload();
+                data_table.ajax.reload();
+                plot_chart("{{ url_for('radio_api_bp.get_alarm_grp_charts') }}");
+
+           });
+
+           tbl_alarm.on( 'select', function ( e, dt, type, indexes ) {
+                    $('#datatablesSimple caption').html($("#alarmGroup").val());
+                    var alarmName = tbl_alarm.rows('.selected').data()[0]['Alarm Name'];
+                   // tbl_site.ajax.reload();
+                   // alert(alarmName);
+                    if (typeof tbl_site !== 'undefined') {
+                         alert('instance exists')
+                         tbl_site.destroy();
+                    }
+                    //  $('#datatablesSite').append('<caption style="caption-side: top">'+ alarmName+' | Liste des Sites</caption>');
+                    $('#datatablesSite caption').html("" + alarmName + " | Liste des Sites");
+                    var tbl_site = $('#datatablesSite').DataTable({
+                     destroy: true,
+                     pageLength : 5,
+                     lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']],
+                     responsive: true,
+                     buttons: [ 'copy', 'excel', 'pdf', 'print' ],
+                     dom: 'Bfrtip',
+                        ajax:{
+                             url: "{{ url_for('radio_api_bp.get_alarm_group_site_data') }}",
+                             type: "POST",
+                             data: function ( d ) {
+                                d.alarm_name = alarmName,
+                                d.uploadDate = $("#uploadDate").val(),
+                                d.alarm_grp = $("#alarmGroup").val(),
+                                d.ssv_status = $("#ssv_status").val()
+                                }
+                            },
+                        columns: [
+                          {data: 'Alarm ID'},
+                          {data: 'Severity'},
+                          {data: 'Alarm Source'},
+                          {data: 'NE Type'},
+                          {data: 'Last Occurred (NT)'},
+                          {data: 'Occurrence Times'}
+                         ],
+                         "rowCallback": function(row, data, index) {
+                                    if (data.Severity == "Critical") {
+                                      $('td:eq(0)', row).css('background-color', '#e60000');
+                                    } else if (data.Severity == "Major") {
+                                      $('td:eq(0)', row).css('background-color', '#ff9900');
+                                    } else if (data.Severity == "Minor") {
+                                      $('td:eq(0)', row).css('background-color', '#ffcc00');
+                                    } else if (data.Severity == "Warning") {
+                                      $('td:eq(0)', row).css('background-color', '#3399ff');
+                                    }
+                                  },
+                       });
+
+                    tbl_site.buttons().container().appendTo( '#example_wrapper .col-md-6:eq(0)' );
+           });
+
+           plot_chart("{{ url_for('radio_api_bp.get_alarm_grp_charts') }}");
+      });
+  </script>
+{% endblock %}
+

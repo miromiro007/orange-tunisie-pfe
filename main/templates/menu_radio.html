@@ -1,0 +1,124 @@
+<!-- Navbar-->
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light py-3">
+    <div class="container-fluid justify-content-between">
+    <!-- Left elements -->
+    <div class="d-flex">
+        <!-- Brand -->
+        <a class="navbar-brand me-2 mb-1 d-flex align-items-center" href="{{ url_for('radio_home_bp.home') }}">
+        <img
+            src="{{ url_for('static', filename='assets/img/orange-logo.png' )}}"
+            height="45"
+            alt="Orange Logo"
+            loading="lazy"
+            style="margin-top: 2px;margin-left: 30px;"
+        />
+        </a>
+    </div>
+    <div class="d-flex">
+        <!-- Brand -->
+        <a class="navbar-brand me-2 mb-1 d-flex align-items-center" href="{{ url_for('radio_home_bp.home') }}">RESEAU RADIO MOBILE</a>
+
+
+    </div>
+    <!-- Left elements -->
+
+    <!-- Center elements -->
+    <ul class="navbar-nav flex-row d-none d-md-flex">
+        <li class="nav-item me-3 me-lg-1 active">
+             <a class="nav-link" href="{{ url_for('radio_home_bp.home') }}"> Home </a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="AlarmDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Alarm Group
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="AlarmDropdown">
+            <li>
+                <a class="dropdown-item" href="{{ url_for('alarm_group_bp.alarm_group', group_name='TDD Alarms') }}">TDD</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('alarm_group_bp.alarm_group', group_name='CLOCK Alarms') }}">CLOCK</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('alarm_group_bp.alarm_group', group_name='ENV Alarms') }}">ENV</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('alarm_group_bp.alarm_group', group_name='RET Alarms') }}">RET</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('alarm_group_bp.alarm_group', group_name='BH Alarms') }}">BH Sharing</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('alarm_group_bp.alarm_group', group_name='VSWR Alarms') }}">VSWR</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('alarm_group_bp.alarm_group', group_name='CPRI Alarms') }}">CPRI</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('alarm_group_bp.alarm_group', group_name='RTWP Alarms') }}">RTWP</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('alarm_group_bp.alarm_group', group_name='Interference Alarms') }}">Interference</a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('alarm_group_bp.alarm_group', group_name='License Alarms') }}">License</a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item me-3 me-lg-1">
+            <a class="nav-link" href="{{ url_for('radio_congestion_bp.show_congestion') }}"> Congestion </a>
+        </li>
+
+        <li class="nav-item me-3 me-lg-1">
+            <a class="nav-link" href="{{ url_for('radio_battery_bp.battery_page') }}"> Battery </a>
+        </li>
+
+        <li class="nav-item me-3 me-lg-1">
+            <a class="nav-link" href="{{ url_for('file_upload_bp.upload') }}">File Upload</a>
+        </li>
+    </ul>
+    <!-- Center elements -->
+
+    <!-- Right elements -->
+    <ul class="navbar-nav flex-row">
+
+        <!-- Search form -->
+        <form class="input-group w-auto my-auto d-none d-sm-flex">
+            <input
+                autocomplete="off"
+                type="search"
+                class="form-control rounded"
+                placeholder="Search"
+                style="min-width: 125px;"
+            />
+            <span class="input-group-text border-0 d-none d-lg-flex">
+                <i class="fas fa-search"></i>
+            </span>
+        </form>
+
+        {% if current_user.is_authenticated  %}
+
+            <li class="nav-item dropdown me-3 me-lg-1">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                     <i class="fas fa-user fa-fw" style="color:#ff7f00;"></i> {{ current_user.username }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                  {% if current_user.role in ['USER_FH_RADIO', 'ADMIN']  %}
+                    <li><a class="dropdown-item" href="{{ url_for('fh_home_bp.home') }}">Reseau FH</a></li>
+                  {% endif  %}
+                    <li><a class="dropdown-item" href="{{ url_for('incident_bp.render_report') }}">rapport incident</a></li>
+                  {% if current_user.role == 'ADMIN'  %}
+                    <li><a class="dropdown-item" href="{{ url_for('user_bp.users_page') }}">Utilisateurs</a></li>
+                  {% endif  %}
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item" href="{{ url_for('user_bp.logout') }}">Logout</a></li>
+                </ul>
+            </li>
+
+        {% endif  %}
+    </ul>
+    <!-- Right elements -->
+    </div>
+</nav>
+<!-- Navbar -->

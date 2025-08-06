@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% block title %} USERS MANAGEMENT {% endblock %}
+{% block top_navbar_title %}
+    <a class="navbar-brand ps-3" href="{{ url_for('fh_home_bp.home') }}"> RESEAU FH - RADIO </a>
+{% endblock %}
+{% block side_nav_menu %}
+     {% include 'menu_users.html' %}
+{% endblock %}
+{% block side_nav_content %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                <div class="row" style="margin-top:50px">
+
+                    <div id="flash-message" class="alert alert-dismissible"
+                         style="width:800px; margin:auto; margin-bottom:10px;"> </div>
+                 </div>
+                <div class="row">
+                    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" style="max-width: 60%;" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                <div class="card shadow-lg border-0 rounded-lg">
+                                    <div class="card-header"><h5 class="text-center font-weight-light my-4">Modifier</h5></div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <form method="post" action="{{ url_for('user_bp.users_page') }}" id="formUserEditAdmin">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3 mb-md-0">
+                                                            <input class="form-control" id="prenom" name="prenom" type="text" placeholder="Entrer votre prenom" disabled/>
+                                                            <label for="prenom">Prenom</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating">
+                                                            <input class="form-control" id="nom" name="nom" type="text" placeholder="Entrer votre nom" disabled/>
+                                                            <label for="nom">Nom</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input class="form-control" id="email" name="email" type="email" placeholder="prenom.nom@orange.com" disabled/>
+                                                    <label for="email">Email</label>
+                                                </div>
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3 mb-md-0">
+                                                            <select class="form-select"  id="role" name="role" aria-label="role">
+                                                                  <option value="USER_FH">USER_FH</option>
+                                                                  <option value="USER_RADIO">USER_RADIO</option>
+                                                                  <option value="USER_FH_RADIO">USER_FH_RADIO</option>
+                                                                  <option value="ADMIN">ADMIN</option>
+                                                            </select>
+                                                            <label for="role">Role</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-floating mb-3 mb-md-0">
+                                                            <select class="form-select"  id="status" name="status" aria-label="status">
+                                                                  <option value=True>Approuvé</option>
+                                                                  <option value=False>Non Approuvé</option>
+                                                            </select>
+                                                            <label for="status">Status Compte</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- hidden inputs -->
+                                                        <input class="form-control" type="hidden" name="hiddenStatus" id="hiddenStatus" value="">
+                                                        <input class="form-control" type="hidden" name="hiddenRole" id="hiddenRole" value="">
+                                                        <input class="form-control" type="hidden" name="hiddenEmail" id="hiddenEmail" value="">
+                                                    <!-- hidden inputs -->
+
+                                                </div>
+                                                <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                                                    <a id="btnEditUser" class="btn btn-outline">Sauvegarder</a>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        USERS Table
+                    </div>
+                    <div class="card-body">
+                        <table id="users_table" class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Prenom</th>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status compte</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for index, row in df_users.iterrows() %}
+                                <tr>
+                                    <td>{{ row['Prenom'] }}</td>
+                                    <td>{{ row['Nom'] }}</td>
+                                    <td>{{ row['Email'] }}</td>
+                                    <td>{{ row['Role'] }}</td>
+                                    {% if row['Status']  %}
+                                        <td>Approuvé</td>
+                                    {% else  %}
+                                        <td>Non Approuvé</td>
+                                    {% endif %}
+                                    <td>
+                                        <a href="#" class="edit-button" onclick="">
+                                            <i class="fa fa-pencil" aria-hidden="true"
+                                           style="color:#ff7f00; width:20px; height:20px"
+                                               ></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <input value=0 type="hidden" name="export_excel" id="export_excel">
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid px-4">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">Copyright &copy; Orange Tunisia 2023</div>
+                    <div>
+                        <a href="#">Privacy Policy</a>
+                        &middot;
+                        <a href="#">Terms &amp; Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+        $(document).ready(function() {
+             users_table = $("#users_table").DataTable();
+
+              // user row edit
+             $('#users_table tbody').on('click', '.edit-button', function() {
+                 var row = users_table.row($(this).closest('tr')).data();
+                 editRow(row);
+             });
+
+              function editRow(row) {
+                    $('#prenom').val(row[0]);
+                    $('#nom').val(row[1]);
+                    $('#email').val(row[2]);
+                    $('#role').val(row[3]);
+
+                    if(row[4] == "Approuvé"){
+                        $('#status').val("True");
+                    }
+                    else{
+                        $('#status').val("False");
+                    }
+
+                    $('#hiddenEmail').val(row[2]);
+                    $('#hiddenRole').val(row[3]);
+                    $('#hiddenStatus').val($('#status').val());
+
+                    showModal();
+              }
+
+              function showModal(){
+                    $('#editUserModal').modal('show');
+              }
+
+
+              $('#btnEditUser').click(function() {
+                    email = $('#email').val();
+                    role = $('#role').val();
+                    status = $('#status').val();
+
+                    prevStatus = $('#hiddenStatus').val();
+                    prevRole = $('#hiddenRole').val();
+
+                    if(role === null){
+                       alert("veuillez indiquer le role");
+                    }
+                    else{
+                        if((prevStatus != status) | (prevRole != role)){
+                             $('#editUserModal').modal('hide');
+                             $('#formUserEditAdmin').submit();
+                        }
+                    }
+              });
+        });
+  </script>
+{% endblock %}
+
+

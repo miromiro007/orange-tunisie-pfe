@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% block title %} Acceuil FH {% endblock %}
+{% block top_navbar_title %}
+    <a class="navbar-brand ps-3" href="{{ url_for('fh_home_bp.home') }}"> RESEAU FH</a>
+{% endblock %}
+{% block side_nav_menu %}
+     {% include 'menu_fh.html' %}
+{% endblock %}
+{% block side_nav_content %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                <div class="row" style="margin-top:50px">
+
+                    <div id="flash-message" class="alert alert-dismissible"
+                         style="width:800px; margin:auto; margin-bottom:10px;"> </div>
+                 </div>
+                <div class="row">
+                    <div class="col-xl-2">
+                        <a href="#" class="btn btn-outline" data-bs-toggle="modal"
+                                       data-bs-target="#congestionModal" style="margin-bottom:20px">
+                                             Nouveau Fichier</a>
+
+                        <!-- Extratc Modal -->
+                        <div class="modal fade" id="congestionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                              <div class="modal-dialog" style="max-width: 60%;" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <div class="card shadow-lg border-0 rounded-lg">
+                                        <div class="card-header"><h5 class="text-center font-weight-light my-4">New NW_LOAD_DISTRIBUTION File</h5></div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <form enctype=multipart/form-data id="uploadNwLoadForm">
+                                                    <div class="input-group mb-3">
+                                                          <label class="input-group-text" for="inputGroupFile01">NW_LOAD_DISTRIBUTION</label>
+                                                          <input type="file" name="nw_load_file" class="form-control" id="inputGroupFile01">
+                                                    </div>
+                                                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                                                        <a id="btnUploadLoad" class="btn btn-outline" data-bs-dismiss="modal">Enregistrer</a>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <hr>
+                                                <h4 class="text-center">NW_LOAD_DISTRIBUTION Extracts</h4>
+                                            <hr>
+                                            <div class="row">
+                                                <table id="loadExtracts" class="table table-striped table-hover" style="width:100%; margin:auto">
+                                                    <thead>
+                                                        <tr>
+                                                            <td>Extracts</td>
+                                                            <td>Action</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for index,row in df_load.iterrows()  %}
+                                                            <tr>
+                                                                <td>{{ row['CreationDate'] }}</td>
+                                                                <td>
+                                                                    <a href="#" onclick="delete_load_file(new Date('{{ row.CreationDate }}'));">
+                                                                        <i class="fa fa-trash" aria-hidden="true"
+                                                                       style="color:#ff7f00; width:20px; height:20px"
+                                                                           ></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2">
+                         <div class="form-floating mb-3">
+                                <select class="form-select"  id="uploadDate" name="uploadDate" aria-label="uploadDate">
+                                     <option value="None"></option>
+                                    {% for index,row in df_load.iterrows() %}
+                                         <option value="{{ row.CreationDate }}">{{ row.CreationDate }}</option>
+                                    {% endfor %}
+                                </select>
+                             <label for="uploadDate" class="form-label">Upload Date</label>
+                        </div>
+                    </div>
+                 </div>
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                Max Daily RX Load (%)
+                            </div>
+                            <div class="card-body">
+                                <div id="loadChart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        NW_LOAD_DISTRIBUTION Table
+                    </div>
+                    <div class="card-body">
+                        <table id="load_distribution_table" class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>IP</th>
+                                    <th>Slot</th>
+                                    <th>Average Daily TX Load (%)</th>
+                                    <th>Max Daily TX Load (%)</th>
+                                    <th>Average Daily RX Load (%)</th>
+                                    <th>Max Daily RX Load (%)</th>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <input value=0 type="hidden" name="export_excel" id="export_excel">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid px-4">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">Copyright &copy; Orange Tunisia 2023</div>
+                    <div>
+                        <a href="#">Privacy Policy</a>
+                        &middot;
+                        <a href="#">Terms &amp; Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+
+  function delete_load_file(date)
+   {
+      params = {"creation_date": date };
+      $.ajax({
+          type: 'POST',
+          url: "{{ url_for('fh_link_capacity_bp.delete_load_distribution_file') }}?cache-bust=" + Date.now(),
+          data: params,
+          success: function(response) {
+                var flashMessage = document.getElementById("flash-message");
+                if (response.status == 'error') {
+                     flashMessage.classList.add('alert-danger');
+                     flashMessage.classList.remove('alert-success');
+                } else {
+                     flashMessage.classList.add('alert-success');
+                     flashMessage.classList.remove('alert-danger');
+                }
+
+                flashMessage.innerHTML = response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                flashMessage.style.display = "block";
+                // Dismiss the message after 3 seconds
+                setTimeout(function() {
+                    flashMessage.style.display = "none";
+                }, 3000);
+                location.reload();
+            },
+          error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+                $('#flash-message').addClass('alert-danger').removeClass('alert-success').html('An error occurred. Please try again later.');
+            }
+        });
+   }
+
+
+   function get_load_distribution_graph()
+   {
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: "{{ url_for('fh_api_bp.get_load_distribution_charts') }}",
+            data: {
+                "uploadDate": $("#uploadDate").val()
+            },
+            success: function(d) {
+
+                Plotly.react("loadChart", JSON.parse(d.load_fig,{}));
+            }
+        });
+   }
+
+
+  $(document).ready(function() {
+
+    $("#loadExtracts").DataTable({pageLength : 7,});
+
+    $('#btnUploadLoad').click(function() {
+      // Handle button click event here
+       var formData = new FormData($('#uploadNwLoadForm')[0]);
+       $.ajax({
+          type: 'POST',
+          url: "{{ url_for('fh_link_capacity_bp.load_distribution_upload') }}?cache-bust=" + Date.now(),
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(response) {
+                var flashMessage = document.getElementById("flash-message");
+                if (response.status == 'error') {
+                     flashMessage.classList.add('alert-danger');
+                     flashMessage.classList.remove('alert-success');
+                } else {
+                     flashMessage.classList.add('alert-success');
+                     flashMessage.classList.remove('alert-danger');
+
+                     flashMessage.innerHTML = response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                     flashMessage.style.display = "block";
+                     // Dismiss the message after 3 seconds
+                     setTimeout(function() {
+                         flashMessage.style.display = "none";
+                     }, 3000);
+                     location.reload();
+                }
+
+                flashMessage.innerHTML = response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                flashMessage.style.display = "block";
+                // Dismiss the message after 3 seconds
+                setTimeout(function() {
+                    flashMessage.style.display = "none";
+                }, 3000);
+            },
+          error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+                $('#flash-message').addClass('alert-danger').removeClass('alert-success').html('An error occurred. Please try again later.');
+            }
+        });
+    });
+
+
+    var load_distribution_table = $('#load_distribution_table').DataTable({
+                                ajax: {
+                                     url: "{{ url_for('fh_api_bp.get_load_distribution_data_table') }}",
+                                     type: "GET",
+                                     data: function ( d ) {
+                                        d.uploadDate = $("#uploadDate").val(),
+                                        d.export_excel = $("#export_excel").val()
+                                        }
+                                },
+                                buttons: [
+                                    {
+                                        extend: 'excelHtml5',
+                                        text: 'Export to Excel',
+                                        filename: 'example',
+                                        action: function(e, dt, button, config) {
+                                            e.preventDefault();
+                                            // Handle click event here
+                                            $("#export_excel").val(1);
+                                            $.ajax({
+                                                url: "{{ url_for('fh_api_bp.get_load_distribution_data_table') }}",
+                                                type: "GET",
+                                                data: {
+                                                    uploadDate: $("#uploadDate").val(),
+                                                    export_excel: $("#export_excel").val()
+                                                    },
+                                                success: function(response) {
+                                                    url = "{{ url_for('radio_api_bp.export_radio_data', filepath='' )}}" ;
+                                                    url = url.concat(response);
+                                                    window.open(url,'_blank');
+                                                    location.reload();
+                                                }
+                                            });
+                                        }
+                                    }
+                                ],
+                                dom: 'Bfrtip',
+                                serverSide: true,
+                                pageLength : 10,
+                                lengthMenu: [[5, 10, 20], [5, 10, 20]],
+                                responsive: true,
+                                columns: [
+                                  {data: 'IP'},
+                                  {data: 'Slot'},
+                                  {data: 'Average Daily TX Load'},
+                                  {data: 'Max Daily TX Load'},
+                                  {data: 'Average Daily RX Load'},
+                                  {data: 'Max Daily RX Load'},
+                                  {data: 'Name'}
+                                ]
+                     });
+
+     get_load_distribution_graph();
+
+
+      $("#uploadDate").change(function(){
+        load_distribution_table.ajax.reload();
+        get_load_distribution_graph();
+     });
+
+  });
+
+  </script>
+{% endblock %}
+
+
