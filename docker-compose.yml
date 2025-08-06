@@ -1,25 +1,55 @@
-version: '3'
+version: '3.8'
+
 services:
   web:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 5000:5000
-    volumes:
-      - .:/app
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: '12345'
+      DB_NAME: projet_pfe
     depends_on:
-      - redis
-      - db
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   redis:
-    image: redis:latest
+    image: redis:7.0-alpine
     ports:
-      - 6379:6379
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   db:
-    image: mysql:8.0.23
+    image: mysql:8.0.33
     environment:
       MYSQL_ROOT_PASSWORD: '12345'
-      MYSQL_DATABASE: 'projet_pfe'
+      MYSQL_DATABASE: projet_pfe
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p12345"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
 volumes:
   mysql_data:
+    driver: local

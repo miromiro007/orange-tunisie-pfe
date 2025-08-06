@@ -11,58 +11,66 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+    - name: Set up Docker Compose
+      run: |
+        sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
 
     - name: Log in to Docker Hub
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v4
       with:
         context: .
         push: true
         tags: docker.io/bbaouissi/projet_automatisation_reseau:latest
 
-    - name: Run services
+    - name: Start services
+      run: docker-compose up -d --build
+
+    - name: Wait for MySQL to be ready
       run: |
-        docker-compose up -d
-        sleep 30  # Attendre que les services démarrent
+        for i in {1..30}; do
+          if docker-compose exec db mysqladmin ping -uroot -p12345 --silent; then
+            echo "MySQL is ready!"
+            break
+          fi
+          echo "Waiting for MySQL... ($i/30)"
+          sleep 5
+        done
 
     - name: Test MySQL Connection
-      env:
-        DB_HOST: db
-        DB_PORT: 3306
-        DB_USER: root
-        DB_PASSWORD: '12345'
-        DB_NAME: projet_pfe
       run: |
-        docker-compose exec -T web python -c "
+        docker-compose exec web python -c "
         import pymysql
+        connection = None
         try:
             connection = pymysql.connect(
-                host='${{ env.DB_HOST }}',
-                port=int('${{ env.DB_PORT }}'),
-                user='${{ env.DB_USER }}',
-                password='${{ env.DB_PASSWORD }}',
-                database='${{ env.DB_NAME }}',
-                connect_timeout=10
+                host='db',
+                port=3306,
+                user='root',
+                password='12345',
+                database='projet_pfe',
+                connect_timeout=5
             )
-            print('Connexion réussie !')
-        except pymysql.MySQLError as e:
-            print(f'Erreur lors de la connexion à MySQL : {e}')
+            print('✅ MySQL connection successful!')
+            with connection.cursor() as cursor:
+                cursor.execute('SHOW TABLES;')
+                print(f'Tables found: {cursor.fetchall()}')
+        except Exception as e:
+            print(f'❌ MySQL connection failed: {e}')
+            exit(1)
         finally:
             if connection:
                 connection.close()
         "
 
-    
-
     - name: Clean up
-      run: |
-        docker-compose down
+      if: always()
+      run: docker-compose down -v
