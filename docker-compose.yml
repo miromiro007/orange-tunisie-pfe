@@ -18,7 +18,7 @@ services:
   db:
     image: mysql:8.0.23
     environment:
-      MYSQL_ROOT_PASSWORD: 'admin'
+      MYSQL_ROOT_PASSWORD: '12345'
       MYSQL_DATABASE: 'projet_pfe'
 
 volumes:
