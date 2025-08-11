@@ -59,7 +59,7 @@ def get_sub_dataset(df, alarm_group_name):
         ])]
 
     elif alarm_group_name == "TDD Alarms":
-        sub_df = df.loc[df['Alarm Source'].str.contains("_TC|_TD")]
+        sub_df = df.loc[df['Alarm Source'].str.contains("_TC|_TD|_TF")]
 
     elif alarm_group_name == "BH Alarms":
         sub_df = df.loc[df['Alarm Source'].str.contains("_BH|_BO")]
@@ -78,6 +78,10 @@ def get_sub_dataset(df, alarm_group_name):
 
     elif alarm_group_name == "License Alarms":
         sub_df = df.loc[df['Name'].str.contains("License")]
+    elif alarm_group_name == "5G Alarms":
+        sub_df = df.loc[
+            df['NE Type'].str.contains("5G|NR", case=False) |
+            df['Name'].str.contains("5G|NR|Beam Failure|Signal Lost", case=False)]
 
     return sub_df
 
@@ -224,6 +228,7 @@ def get_home_cards(df_active, df):
     df_rtwp = get_sub_dataset(df_active, "RTWP Alarms")
     df_interf = get_sub_dataset(df_active, "Interference Alarms")
     df_lice = get_sub_dataset(df_active, "License Alarms")
+    df_5g = get_sub_dataset(df_active, "5G Alarms")  # Nouveau
 
     cards = {
         "card_active_alarm": f'{df_active.shape[0]:,}',
@@ -238,7 +243,7 @@ def get_home_cards(df_active, df):
         "card_active_rtwp": f'{df_rtwp.shape[0]:,}',
         "card_active_interference": f'{df_interf.shape[0]:,}',
         "card_active_license": f'{df_lice.shape[0]:,}',
-
+        "card_active_5g": f'{df_5g.shape[0]:,}',  # Nouveau
     }
     return cards
 

@@ -64,7 +64,7 @@ class LoadDistributionService:
             redis_delete_df(redis_key)
             return True
         else:
-            raise Exception("Le fichier n'existe pas")
+            raise (Exception("Le fichier n'existe pas"))
 
     @staticmethod
     def get_data(creation_date=None):

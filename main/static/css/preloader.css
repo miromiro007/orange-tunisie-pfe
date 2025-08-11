@@ -40,4 +40,4 @@ body.loading .load {
 /* Anytime the body has the loading class, our
    modal element will be visible */
 body.loading .load {
-    display: block;
+    display: block;}

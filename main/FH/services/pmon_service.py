@@ -45,7 +45,7 @@ class PMONService:
             db.session.commit()
             return True
         except (Exception,):
-            raise Exception("Impossible d'ajouter le fichier; veuillez verifier les colonnes fournies !")
+            raise (Exception("Impossible d'ajouter le fichier; veuillez verifier les colonnes fournies !"))
 
     @staticmethod
     def get_data(creation_date=None):
@@ -130,7 +130,7 @@ class PMONService:
             redis_delete_df(redis_key)
             return True
         else:
-            raise Exception("Le fichier n'existe pas")
+            raise (Exception("Le fichier n'existe pas"))
 
     @staticmethod
     def update_pmon(ip, comment, upload_date, high_value):
