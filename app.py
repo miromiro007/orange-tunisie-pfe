@@ -1,9 +1,9 @@
 import click
 import pymysql
-from flask import Flask
 from main import create_app
 from main.user_managment.services.user_service import UserService
 from main.utils.extensions import db
+
 import os
 
 app = create_app()

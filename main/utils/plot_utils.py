@@ -58,7 +58,7 @@ def plot_top_n_horizontal(df, column_name, n, title, xaxis_title, yaxis_title):
         y=top_n.index,
         orientation='h',
         text=top_n.values,
-        texttemplate="%{x}",
+        texttemplate="", #%{x}
         textposition='inside'
     ))
 
@@ -165,7 +165,7 @@ def plot_alarm_trend_by_date(df):
             x=df_ev["Save Time"],
             y=df_ev["Total"],
             text=df_ev["Total"],
-            texttemplate="%{y}",
+            texttemplate="", #%{y}
             textposition='inside',
             marker_color='#ff9900'
         )],
@@ -250,7 +250,7 @@ def plot_duration_intervals(df):
             y=interval_df.Interval,
             orientation='h',
             text=interval_df.values,
-            texttemplate="%{x}",
+            texttemplate="", #%{x}
             textposition='inside'
         ))
 
